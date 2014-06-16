@@ -116,8 +116,6 @@ public class PlaytubeSampleActivity extends ListActivity {
 				String contentURL = cs.getString(1);
 				String thumbnailURL = cs.getString(2);
 
-				Toast.makeText(this, title, Toast.LENGTH_SHORT).show();
-
 				YouTubeVideoItem item = new YouTubeVideoItem(title, contentURL, thumbnailURL);
 				favList.add(item);
 			} while (cs.moveToNext());
