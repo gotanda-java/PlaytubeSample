@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <!-- リニアレイアウト(縦並び) -->
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- リニアレイアウト(横並び) -->
+    <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+      <!-- 検索キーワード入力エリア -->
+      <EditText
+        android:id="@+id/et_keyword"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:singleLine="true"
+        android:inputType="text" />
+
+      <!-- 検索ボタン -->
+      <ImageButton
+        android:id="@+id/ibtn_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/search"
+        android:contentDescription="@string/desctiption" />
+    </LinearLayout>
+
+    <!-- テキストビュー -->
+    <TextView 
+        android:id="@+id/tv_listlabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_listlabel"/>
+    
+    <!-- 動画リスト -->
+    <ListView
+      android:id="@android:id/list"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:choiceMode="singleChoice"
+      android:fadingEdge="vertical" />
+  </LinearLayout>
+
+  <!-- 前ページボタン -->
+  <ImageButton
+    android:id="@+id/ibtn_prev"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|left"
+    android:src="@drawable/arrow_left"
+    android:background="@drawable/bg_black"
+    android:contentDescription="@string/desctiption" />
+
+  <!-- 次ページボタン -->
+  <ImageButton
+    android:id="@+id/ibtn_next"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|right"
+    android:src="@drawable/arrow_right"
+    android:background="@drawable/bg_black"
+    android:contentDescription="@string/desctiption" />
+
+</FrameLayout>
