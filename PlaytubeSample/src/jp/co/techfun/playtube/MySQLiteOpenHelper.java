@@ -8,7 +8,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 	static final String DB = "sqlite_favorit.db";
 	static final int DB_VERSION = 1;
 	static final String CREATE_TABLE = "create table favorite ( _id integer primary key autoincrement, title text not null, content text not null, thumbnail text not null );";
-	static final String DROP_TABLE = "drop table mytable;";
+	static final String DROP_TABLE = "drop table favorite;";
 
 	public MySQLiteOpenHelper(Context context) {
 		super(context, DB, null, DB_VERSION);

@@ -2,23 +2,27 @@ package jp.co.techfun.playtube;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import android.annotation.SuppressLint;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 // YouTube動画検索画面Activity
+@SuppressLint("NewApi")
 public class PlaytubeSampleActivity extends ListActivity {
 	// インテントのデータ受け渡しキー定義
 	// YouTube動画URL
@@ -36,6 +40,12 @@ public class PlaytubeSampleActivity extends ListActivity {
 
 	// お気に入りリストフラグ
 	boolean flag = false;
+
+	// menu定数
+	private static final int MENU_ITEM_DISPLAY = 0;
+
+	// TextView定数
+	private static final String RESULTS = "検索結果一覧";
 
 	// onCreateメソッド(画面初期表示イベント)
 	@Override
@@ -60,12 +70,30 @@ public class PlaytubeSampleActivity extends ListActivity {
 		ImageButton ibtnNext = (ImageButton) findViewById(R.id.ibtn_next);
 		ibtnNext.setOnClickListener(nextBtnOnClickListener);
 
-		// お気に入り表示
+		// お気に入り動画リスト取得
 		List<YouTubeVideoItem> items = getFavoritList();
 
-		// お気に入りがあれば
+		// お気に入りがあれば表示
 		if (flag)
 			setSearchResult(items);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(Menu.NONE, MENU_ITEM_DISPLAY, Menu.NONE, "お気に入り表示");
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case MENU_ITEM_DISPLAY:
+			Intent intent = new Intent();
+			intent.setClass(PlaytubeSampleActivity.this, getClass());
+			startActivity(intent);
+			break;
+		}
+		return false;
 	}
 
 	// onSaveInstanceStateメソッド（状態保持処理)
@@ -140,8 +168,11 @@ public class PlaytubeSampleActivity extends ListActivity {
 		// アダプタ設定
 		setListAdapter(adapter);
 
-		// 動画リストへフォーカス
-		getListView().requestFocus();
+		// 検索結果なら動画へフォーカス
+		TextView tvLabel = (TextView) findViewById(R.id.tv_listlabel);
+		if (tvLabel.getText().toString().equals(RESULTS))
+			// 動画リストへフォーカス
+			getListView().requestFocus();
 	}
 
 	// onListItemClickメソッド(動画リストより1件選択処理)
@@ -184,13 +215,18 @@ public class PlaytubeSampleActivity extends ListActivity {
 				// Prev・Nextボタンを表示
 				ibtnPrev.setVisibility(View.VISIBLE);
 				ibtnNext.setVisibility(View.VISIBLE);
+				// ソフトウェアキーボードを非表示
+				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 			}
 		}
 	};
 
 	// 検索ボタンクリックリスナー定義
+	@SuppressLint("NewApi")
 	private OnClickListener searchBtnOnClickListener = new OnClickListener() {
 		// onClickメソッド(ボタンクリック時イベント)
+		@SuppressLint("NewApi")
 		@Override
 		public void onClick(View v) {
 			// 検索キーワードを取得
@@ -204,7 +240,13 @@ public class PlaytubeSampleActivity extends ListActivity {
 
 			// リストラベル変更
 			TextView tvLabel = (TextView) findViewById(R.id.tv_listlabel);
-			tvLabel.setText("検索結果一覧");
+			tvLabel.setText(RESULTS);
+			
+			// フォーカス強制移動
+			ImageButton ibtnSearch = (ImageButton) findViewById(R.id.ibtn_search);
+			ibtnSearch.setFocusable(true);
+			ibtnSearch.setFocusableInTouchMode(true);
+			ibtnSearch.requestFocus();
 		}
 	};
 
