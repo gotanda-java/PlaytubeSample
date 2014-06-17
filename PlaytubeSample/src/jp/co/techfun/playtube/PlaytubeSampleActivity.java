@@ -206,10 +206,10 @@ public class PlaytubeSampleActivity extends ListActivity {
 		// お気に入りリストからの再生なのか判定
 		// インテントパラメータにお気に入り動画フラグを設定
 		TextView tvlabel = (TextView) findViewById(R.id.tv_listlabel);
-		if (!tvlabel.getText().toString().equals(RESULTS))
-			intent.putExtra(IntentKey.FROM_FLAG.name(), FROM_FAV_LIST);
-		else{
+		if (tvlabel.getText().toString().equals(RESULTS))
 			intent.putExtra(IntentKey.FROM_FLAG.name(), FROM_RESULTS_LIST);
+		else {
+			intent.putExtra(IntentKey.FROM_FLAG.name(), FROM_FAV_LIST);
 		}
 
 		// Activityを表示
