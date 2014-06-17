@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -173,18 +174,23 @@ public class VideoPlayerActivity extends Activity {
 			values.put("thumbnail", thumbnail);
 			fav_db.insert("favorite", null, values);
 			values.clear();
-
+			fav_db.close();
+			
 			Toast.makeText(VideoPlayerActivity.this, "お気に入りに追加しました", Toast.LENGTH_SHORT).show();
 			break;
 		case MENU_ITEM_DELETEFAV:
 			// データ削除
 			fav_db.delete("favorite", "content=?", new String[]{urlString});
+			fav_db.close();
 			
 			Toast.makeText(VideoPlayerActivity.this, "お気に入りから削除しました", Toast.LENGTH_SHORT).show();
-			break;
+			
+			// トップ画面に戻る
+			Intent intent = new Intent();
+			intent.setClass(VideoPlayerActivity.this, PlaytubeSampleActivity.class);
+			startActivity(intent);
 		}
-
-		fav_db.close();
+		
 		return false;
 	}
 }
