@@ -24,6 +24,14 @@ public class VideoPlayerActivity extends Activity {
 
 	// menuアイテムID
 	private static final int MENU_ITEM_ADDFAV = 0;
+	private static final int MENU_ITEM_DELETEFAV = 1;
+
+	// お気に入り動画リストからの再生なのか判定フラグ
+	int flag;
+
+	// 動画再生元定数
+	private static final int FROM_FAV_LIST = 0;
+	private static final int FROM_RESULTS_LIST = 1;
 
 	// onCreateメソッド(画面初期表示イベント)
 	@Override
@@ -55,6 +63,9 @@ public class VideoPlayerActivity extends Activity {
 
 		// 動画タイトルを取得
 		String title = getIntent().getStringExtra(PlaytubeSampleActivity.IntentKey.MEDIA_TITLE.name());
+		
+		// 動画再生元リスト判定
+		flag = getIntent().getIntExtra(PlaytubeSampleActivity.IntentKey.FROM_FLAG.name(), FROM_RESULTS_LIST);
 
 		// タイトルバーに動画タイトルを設定
 		setTitle(title);
@@ -128,25 +139,33 @@ public class VideoPlayerActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(Menu.NONE, MENU_ITEM_ADDFAV, Menu.NONE, "お気に入りに追加");
+		//　堂が再生元リストで振り分け
+		switch (flag) {
+		case FROM_RESULTS_LIST:
+			menu.add(Menu.NONE, MENU_ITEM_ADDFAV, Menu.NONE, "お気に入りに追加");
+			break;
+		case FROM_FAV_LIST:
+			menu.add(Menu.NONE, MENU_ITEM_DELETEFAV, Menu.NONE, "お気に入りから削除");
+			break;
+		}
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		// 動画タイトルを取得
+		String title = getIntent().getStringExtra(PlaytubeSampleActivity.IntentKey.MEDIA_TITLE.name());
+		// 動画のURIを取得
+		String urlString = getIntent().getStringExtra(PlaytubeSampleActivity.IntentKey.MEDIA_URL.name());
+		// 動画のURIを取得
+		String thumbnail = getIntent().getStringExtra(PlaytubeSampleActivity.IntentKey.THUMBNAIL_URL.name());
+
+		// データベースオープン
+		MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this);
+		fav_db = helper.getWritableDatabase();
+
 		switch (item.getItemId()) {
 		case MENU_ITEM_ADDFAV:
-			// 動画タイトルを取得
-			String title = getIntent().getStringExtra(PlaytubeSampleActivity.IntentKey.MEDIA_TITLE.name());
-			// 動画のURIを取得
-			String urlString = getIntent().getStringExtra(PlaytubeSampleActivity.IntentKey.MEDIA_URL.name());
-			// 動画のURIを取得
-			String thumbnail = getIntent().getStringExtra(PlaytubeSampleActivity.IntentKey.THUMBNAIL_URL.name());
-			
-			// データベースオープン
-			MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this);
-			fav_db = helper.getWritableDatabase();
-			
 			// データ追加
 			ContentValues values = new ContentValues();
 			values.put("title", title);
@@ -154,12 +173,18 @@ public class VideoPlayerActivity extends Activity {
 			values.put("thumbnail", thumbnail);
 			fav_db.insert("favorite", null, values);
 			values.clear();
-			
-			fav_db.close();
-			
+
 			Toast.makeText(VideoPlayerActivity.this, "お気に入りに追加しました", Toast.LENGTH_SHORT).show();
 			break;
+		case MENU_ITEM_DELETEFAV:
+			// データ削除
+			fav_db.delete("favorite", "content=?", new String[]{urlString});
+			
+			Toast.makeText(VideoPlayerActivity.this, "お気に入りから削除しました", Toast.LENGTH_SHORT).show();
+			break;
 		}
+
+		fav_db.close();
 		return false;
 	}
 }

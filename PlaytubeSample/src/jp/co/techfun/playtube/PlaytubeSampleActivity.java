@@ -27,7 +27,7 @@ public class PlaytubeSampleActivity extends ListActivity {
 	// インテントのデータ受け渡しキー定義
 	// YouTube動画URL
 	static enum IntentKey {
-		MEDIA_URL, MEDIA_TITLE, THUMBNAIL_URL
+		MEDIA_URL, MEDIA_TITLE, THUMBNAIL_URL, FROM_FLAG
 	};
 
 	// 状態保持用キー定義
@@ -46,6 +46,10 @@ public class PlaytubeSampleActivity extends ListActivity {
 
 	// TextView定数
 	private static final String RESULTS = "検索結果一覧";
+
+	// 動画再生元定数
+	private static final int FROM_FAV_LIST = 0;
+	private static final int FROM_RESULTS_LIST = 1;
 
 	// onCreateメソッド(画面初期表示イベント)
 	@Override
@@ -74,8 +78,13 @@ public class PlaytubeSampleActivity extends ListActivity {
 		List<YouTubeVideoItem> items = getFavoritList();
 
 		// お気に入りがあれば表示
-		if (flag)
+		if (flag) {
+			// Prev・Nextボタンを非表示
+			ibtnPrev.setVisibility(View.GONE);
+			ibtnNext.setVisibility(View.GONE);
+
 			setSearchResult(items);
+		}
 	}
 
 	@Override
@@ -194,6 +203,15 @@ public class PlaytubeSampleActivity extends ListActivity {
 		// インテントパラメータにサムネイルURLを設定
 		intent.putExtra(IntentKey.THUMBNAIL_URL.name(), item.getThumbnailURL());
 
+		// お気に入りリストからの再生なのか判定
+		// インテントパラメータにお気に入り動画フラグを設定
+		TextView tvlabel = (TextView) findViewById(R.id.tv_listlabel);
+		if (!tvlabel.getText().toString().equals(RESULTS))
+			intent.putExtra(IntentKey.FROM_FLAG.name(), FROM_FAV_LIST);
+		else{
+			intent.putExtra(IntentKey.FROM_FLAG.name(), FROM_RESULTS_LIST);
+		}
+
 		// Activityを表示
 		startActivity(intent);
 	}
@@ -241,7 +259,7 @@ public class PlaytubeSampleActivity extends ListActivity {
 			// リストラベル変更
 			TextView tvLabel = (TextView) findViewById(R.id.tv_listlabel);
 			tvLabel.setText(RESULTS);
-			
+
 			// フォーカス強制移動
 			ImageButton ibtnSearch = (ImageButton) findViewById(R.id.ibtn_search);
 			ibtnSearch.setFocusable(true);
@@ -255,12 +273,14 @@ public class PlaytubeSampleActivity extends ListActivity {
 		// onClickメソッド(ボタンクリック時イベント)
 		@Override
 		public void onClick(View v) {
-
-			// 検索結果の前のページを取得
-			List<YouTubeVideoItem> items = YouTubeDataUtil.getInstance().getPrevPage();
-
-			// 検索結果を表示
-			setSearchResult(items);
+			// 検索結果一覧のとき
+			TextView tvlabel = (TextView) findViewById(R.id.tv_listlabel);
+			if (tvlabel.getText().toString().equals(RESULTS)) {
+				// 検索結果の前のページを取得
+				List<YouTubeVideoItem> items = YouTubeDataUtil.getInstance().getPrevPage();
+				// 検索結果を表示
+				setSearchResult(items);
+			}
 		}
 	};
 
@@ -269,12 +289,14 @@ public class PlaytubeSampleActivity extends ListActivity {
 		// onClickメソッド(ボタンクリック時イベント)
 		@Override
 		public void onClick(View v) {
-
-			// 検索結果の次のページを取得
-			List<YouTubeVideoItem> items = YouTubeDataUtil.getInstance().getNextPage();
-
-			// 検索結果を表示
-			setSearchResult(items);
+			// 検索結果一覧のとき
+			TextView tvlabel = (TextView) findViewById(R.id.tv_listlabel);
+			if (tvlabel.getText().toString().equals(RESULTS)) {
+				// 検索結果の次のページを取得
+				List<YouTubeVideoItem> items = YouTubeDataUtil.getInstance().getNextPage();
+				// 検索結果を表示
+				setSearchResult(items);
+			}
 		}
 	};
 }
